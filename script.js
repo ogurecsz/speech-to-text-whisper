@@ -1,33 +1,34 @@
+// ИЗМЕНЕНИЕ 1: Импортируем нужную нам функцию 'pipeline' напрямую из библиотеки.
+import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1';
+
 // Получаем ссылки на элементы DOM
 const fileInput = document.getElementById('audio-file-input');
 const transcribeButton = document.getElementById('transcribe-button');
 const statusElement = document.getElementById('status');
 const resultTextElement = document.getElementById('result-text');
 
-let recognizer; // Переменная для хранения экземпляра распознавателя
+let recognizer;
 
-// Функция для обновления статуса на странице
 function updateStatus(text) {
     statusElement.textContent = text;
     console.log(text);
 }
 
-// Инициализация модели при загрузке страницы
 async function initializeRecognizer() {
     try {
         updateStatus('Загрузка модели... (может занять несколько минут при первом запуске)');
-        // Используем модель 'Xenova/whisper-base' для хорошего баланса качества и скорости.
-        // Для максимальной скорости можно использовать 'Xenova/whisper-tiny'.
-        recognizer = await Transformers.pipeline('automatic-speech-recognition', 'Xenova/whisper-base');
+        
+        // ИЗМЕНЕНИЕ 2: Теперь мы используем напрямую функцию 'pipeline', а не 'Transformers.pipeline'.
+        recognizer = await pipeline('automatic-speech-recognition', 'Xenova/whisper-base');
+        
         updateStatus('Модель загружена. Выберите аудиофайл.');
-        transcribeButton.disabled = false; // Активируем кнопку после загрузки
+        transcribeButton.disabled = false;
     } catch (error) {
         updateStatus('Ошибка при загрузке модели.');
         console.error(error);
     }
 }
 
-// Функция для распознавания речи из файла
 async function transcribeAudio() {
     if (!fileInput.files.length) {
         updateStatus('Ошибка: файл не выбран.');
@@ -39,18 +40,17 @@ async function transcribeAudio() {
     }
 
     const file = fileInput.files[0];
-    const audioUrl = URL.createObjectURL(file); // Создаем URL для файла
+    const audioUrl = URL.createObjectURL(file);
 
     try {
         transcribeButton.disabled = true;
-        resultTextElement.textContent = ''; // Очищаем предыдущий результат
+        resultTextElement.textContent = '';
         updateStatus(`Обработка файла: ${file.name}...`);
         
-        // Запускаем распознавание
         const output = await recognizer(audioUrl, {
-            chunk_length_s: 30, // Делим аудио на 30-секундные отрезки
-            stride_length_s: 5, // С перекрытием в 5 секунд для точности
-            language: 'russian', // Указываем язык (можно убрать для автоопределения)
+            chunk_length_s: 30,
+            stride_length_s: 5,
+            language: 'russian',
             task: 'transcribe',
         });
 
@@ -61,13 +61,11 @@ async function transcribeAudio() {
         console.error(error);
     } finally {
         transcribeButton.disabled = false;
-        URL.revokeObjectURL(audioUrl); // Освобождаем память
+        URL.revokeObjectURL(audioUrl);
     }
 }
 
-// Привязываем события
 transcribeButton.addEventListener('click', transcribeAudio);
-transcribeButton.disabled = true; // Кнопка неактивна до загрузки модели
+transcribeButton.disabled = true;
 
-// Начинаем загрузку модели сразу после загрузки скрипта
 initializeRecognizer();
