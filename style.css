@@ -1,359 +1,433 @@
 /* Переменные для цветов */
 :root {
-    /* Светлая тема */
-    --light-bg: #f0f2f5;
+    /* Цвета для Светлой темы */
+    --light-bg-start: #f0f2f5;
+    --light-bg-end: #e0e2e5;
     --light-container-bg: #ffffff;
-    --light-text: #333;
-    --light-primary: #007bff;
-    --light-button-hover: #0056b3;
-    --light-box-bg: #e9ecef;
-    --light-shadow: rgba(0, 0, 0, 0.1);
-    --light-input-border: #ccc;
-    --light-separator: #ddd;
+    --light-text-primary: #333;
+    --light-text-secondary: #555;
+    --light-accent: #007bff;
+    --light-accent-hover: #0056b3;
+    --light-card-bg: #f5f7f8;
+    --light-border: #e0e0e0;
+    --light-shadow-color: rgba(0, 0, 0, 0.1);
+    --light-icon-color: #007bff;
 
-    /* Темная тема */
-    --dark-bg: #1a1a2e; /* Глубокий синий/фиолетовый */
-    --dark-container-bg: #16213e; /* Чуть светлее, для контраста */
-    --dark-text: #e0e0e0;
-    --dark-primary: #e94560; /* Яркий акцент для темной темы */
-    --dark-button-hover: #b3364d;
-    --dark-box-bg: #0f3460; /* Темный фон для блоков статуса/результата */
-    --dark-shadow: rgba(0, 0, 0, 0.4);
-    --dark-input-border: #4a4a66;
-    --dark-separator: #2a3d5b;
+    /* Цвета для Темной темы */
+    --dark-bg-start: #1a1a2e; /* Глубокий синий/фиолетовый */
+    --dark-bg-end: #0f3460;   /* Темно-синий */
+    --dark-container-bg: #16213e; /* Чуть светлее для контраста */
+    --dark-text-primary: #e0e0e0;
+    --dark-text-secondary: #b0b0b0;
+    --dark-accent: #e94560; /* Яркий малиновый акцент */
+    --dark-accent-hover: #b3364d;
+    --dark-card-bg: #1c2e4a; /* Для карточек секций */
+    --dark-border: #2a3d5b;
+    --dark-shadow-color: rgba(0, 0, 0, 0.6);
+    --dark-icon-color: #e94560;
 
-    /* Градиенты для темной темы */
-    --dark-gradient-body: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    --dark-gradient-container: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
-    --dark-gradient-button: linear-gradient(45deg, #e94560 0%, #e94560 100%); /* Прямой градиент для кнопки */
-    --dark-gradient-button-hover: linear-gradient(45deg, #b3364d 0%, #b3364d 100%);
-    --dark-gradient-status-box: linear-gradient(45deg, #0f3460 0%, #2a3d5b 100%);
-    --dark-gradient-input: linear-gradient(90deg, #2a3d5b 0%, #1a1a2e 100%);
+    /* Общие стили */
+    --border-radius-main: 25px;
+    --border-radius-elements: 15px;
+    --transition-speed: 0.4s ease-in-out; /* Плавные переходы */
+    --button-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    --button-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.35);
 }
 
-/* Общие стили */
+/* Общие стили для body */
 body {
-    font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    transition: background-color 0.5s ease, color 0.5s ease, background-image 0.5s ease;
+    transition: background var(--transition-speed), color var(--transition-speed);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    position: relative; /* Для позиционирования theme-toggle-container */
+    overflow: hidden; /* Чтобы градиенты не выходили за рамки */
 }
 
-/* Стили для светлой темы */
+/* Стили для Темной темы (по умолчанию) */
+body.dark-theme {
+    background: linear-gradient(135deg, var(--dark-bg-start) 0%, var(--dark-bg-end) 100%);
+    color: var(--dark-text-primary);
+}
+
+body.dark-theme .container {
+    background: linear-gradient(145deg, var(--dark-container-bg), var(--dark-bg-end));
+    box-shadow: 0 15px 50px var(--dark-shadow-color);
+    border: 1px solid var(--dark-border);
+}
+
+body.dark-theme .main-title,
+body.dark-theme .description,
+body.dark-theme .section-title {
+    color: var(--dark-text-primary);
+}
+body.dark-theme .title-icon,
+body.dark-theme .section-icon {
+    color: var(--dark-accent);
+}
+
+body.dark-theme .card-section {
+    background: var(--dark-card-bg);
+    border: 1px solid var(--dark-border);
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .action-button {
+    background: linear-gradient(45deg, var(--dark-accent) 0%, #ff6b81 100%); /* Яркий градиент */
+    box-shadow: var(--button-shadow);
+}
+body.dark-theme .action-button:hover:not(:disabled) {
+    background: linear-gradient(45deg, var(--dark-accent-hover) 0%, #fa4662 100%); /* Темнее при наведении */
+    box-shadow: var(--button-shadow-hover);
+}
+
+body.dark-theme .custom-file-input {
+    background: var(--dark-card-bg);
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text-secondary);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+}
+body.dark-theme .custom-file-input:hover {
+    background: var(--dark-border);
+}
+
+body.dark-theme .or-separator {
+    color: var(--dark-text-secondary);
+}
+
+body.dark-theme .message-box {
+    background: var(--dark-card-bg);
+    border: 1px solid var(--dark-border);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+    color: var(--dark-text-secondary);
+}
+body.dark-theme .message-box strong {
+    color: var(--dark-text-primary);
+}
+body.dark-theme .message-box .fa-info-circle,
+body.dark-theme .message-box .fa-comment-dots {
+    color: var(--dark-accent);
+}
+
+body.dark-theme .theme-toggle-button {
+    background: var(--dark-card-bg);
+    color: var(--dark-accent);
+    border: 1px solid var(--dark-border);
+    box-shadow: var(--button-shadow);
+}
+body.dark-theme .theme-toggle-button:hover {
+    background: var(--dark-accent);
+    color: white;
+}
+body.dark-theme .pulse-circle {
+    background-color: var(--dark-accent);
+}
+
+/* Стили для Светлой темы */
 body.light-theme {
-    background-color: var(--light-bg);
-    color: var(--light-text);
+    background: linear-gradient(135deg, var(--light-bg-start) 0%, var(--light-bg-end) 100%);
+    color: var(--light-text-primary);
 }
 
 body.light-theme .container {
     background: var(--light-container-bg);
-    box-shadow: 0 8px 25px var(--light-shadow); /* Более выраженная тень */
+    box-shadow: 0 15px 50px var(--light-shadow-color);
+    border: 1px solid var(--light-border);
 }
 
-body.light-theme h1,
-body.light-theme .description {
-    color: var(--light-primary);
+body.light-theme .main-title,
+body.light-theme .description,
+body.light-theme .section-title {
+    color: var(--light-text-primary);
+}
+body.light-theme .title-icon,
+body.light-theme .section-icon {
+    color: var(--light-accent);
+}
+
+body.light-theme .card-section {
+    background: var(--light-card-bg);
+    border: 1px solid var(--light-border);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 body.light-theme .action-button {
-    background-color: var(--light-primary);
+    background-color: var(--light-accent);
+    box-shadow: var(--button-shadow);
 }
-
 body.light-theme .action-button:hover:not(:disabled) {
-    background-color: var(--light-button-hover);
+    background-color: var(--light-accent-hover);
+    box-shadow: var(--button-shadow-hover);
 }
 
-body.light-theme .file-input,
-body.light-theme .status-box,
-body.light-theme .result-box {
-    background-color: var(--light-box-bg);
-    border: 1px solid var(--light-input-border);
+body.light-theme .custom-file-input {
+    background: var(--light-card-bg);
+    border: 1px solid var(--light-border);
+    color: var(--light-text-secondary);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.03);
+}
+body.light-theme .custom-file-input:hover {
+    background: #e9eff2;
 }
 
 body.light-theme .or-separator {
-    color: var(--light-separator);
+    color: var(--light-text-secondary);
 }
 
-body.light-theme .theme-switcher button {
-    background-color: var(--light-box-bg);
-    color: var(--light-primary);
-    border: 1px solid var(--light-input-border);
-    box-shadow: 0 2px 8px var(--light-shadow);
+body.light-theme .message-box {
+    background: var(--light-card-bg);
+    border: 1px solid var(--light-border);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.03);
+    color: var(--light-text-secondary);
+}
+body.light-theme .message-box strong {
+    color: var(--light-text-primary);
+}
+body.light-theme .message-box .fa-info-circle,
+body.light-theme .message-box .fa-comment-dots {
+    color: var(--light-accent);
 }
 
-body.light-theme .theme-switcher button:hover {
-    background-color: var(--light-primary);
-    color: var(--light-container-bg);
+body.light-theme .theme-toggle-button {
+    background: var(--light-card-bg);
+    color: var(--light-accent);
+    border: 1px solid var(--light-border);
+    box-shadow: var(--button-shadow);
 }
-
-
-/* Стили для темной темы */
-body.dark-theme {
-    background: var(--dark-gradient-body); /* Градиент для фона */
-    color: var(--dark-text);
-}
-
-body.dark-theme .container {
-    background: var(--dark-gradient-container); /* Градиент для контейнера */
-    box-shadow: 0 8px 30px var(--dark-shadow); /* Темная тень */
-}
-
-body.dark-theme h1,
-body.dark-theme .description {
-    color: var(--dark-primary);
-}
-
-body.dark-theme .action-button {
-    background: var(--dark-gradient-button); /* Градиент для кнопки */
-    color: white; /* Всегда белый текст на яркой кнопке */
-}
-
-body.dark-theme .action-button:hover:not(:disabled) {
-    background: var(--dark-gradient-button-hover); /* Градиент для кнопки при наведении */
-}
-
-body.dark-theme .file-input,
-body.dark-theme .status-box,
-body.dark-theme .result-box {
-    background: var(--dark-gradient-status-box); /* Градиент для блоков */
-    border: 1px solid var(--dark-input-border);
-    color: var(--dark-text); /* Убедимся, что текст виден */
-}
-
-body.dark-theme .or-separator {
-    color: var(--dark-separator);
-}
-
-body.dark-theme .theme-switcher button {
-    background: var(--dark-gradient-status-box);
-    color: var(--dark-primary);
-    border: 1px solid var(--dark-input-border);
-    box-shadow: 0 2px 8px var(--dark-shadow);
-}
-body.dark-theme .theme-switcher button:hover {
-    background: var(--dark-primary);
+body.light-theme .theme-toggle-button:hover {
+    background: var(--light-accent);
     color: white;
 }
+body.light-theme .pulse-circle {
+    background-color: var(--light-accent);
+}
 
-
-/* Общие стили контейнера и элементов */
+/* Общие стили контейнера и элементов (не зависят от темы) */
 .container {
-    padding: 2.5rem;
-    border-radius: 20px; /* Закругленные края */
-    max-width: 650px;
+    padding: 3rem;
+    border-radius: var(--border-radius-main);
+    max-width: 700px;
     width: 90%;
     text-align: center;
-    transition: background 0.5s ease, box-shadow 0.5s ease, color 0.5s ease;
-    position: relative; /* Для позиционирования переключателя темы */
+    transition: background var(--transition-speed), box-shadow var(--transition-speed), border-color var(--transition-speed);
+    position: relative;
+    z-index: 1; /* Чтобы быть над фоном */
 }
 
-h1 {
-    font-size: 2.2rem;
+.main-title {
+    font-size: 2.8rem;
     margin-bottom: 0.8rem;
-    font-weight: 700;
-}
-
-.description {
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
-    line-height: 1.5;
-    opacity: 0.8;
-}
-
-.input-section {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    border-radius: 15px; /* Закругленные края */
-    background-color: rgba(255, 255, 255, 0.05); /* Легкий фон для секций */
-    backdrop-filter: blur(5px); /* Размытие для эффекта стекла в темной теме */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05); /* Внутренняя тень */
-}
-
-.input-section h3 {
-    margin-top: 0;
-    margin-bottom: 1.2rem;
-    font-size: 1.4rem;
-}
-
-.file-input {
-    width: calc(100% - 20px);
-    padding: 12px;
-    margin-bottom: 15px;
-    border-radius: 10px; /* Закругленные края */
-    box-sizing: border-box;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.action-button {
-    width: 100%;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 10px; /* Закругленные края */
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease; /* Добавляем transition для background */
-    font-weight: 600;
+    font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px; /* Расстояние между иконкой и текстом */
+    gap: 15px;
+}
+.title-icon {
+    font-size: 2.5rem;
+    transition: transform var(--transition-speed);
+}
+.main-title:hover .title-icon {
+    transform: rotate(-10deg) scale(1.1);
 }
 
-.action-button:hover:not(:disabled) {
+.description {
+    font-size: 1.2rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+    opacity: 0.8;
+}
+
+.card-section {
+    margin-bottom: 2.5rem;
+    padding: 2rem;
+    border-radius: var(--border-radius-elements);
+    transition: background var(--transition-speed), border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.section-title {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.section-icon {
+    font-size: 1.4rem;
+}
+
+/* Стилизация скрытого инпута для файла через label */
+.hidden-file-input {
+    display: none;
+}
+
+.custom-file-input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border-radius: var(--border-radius-elements);
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: background var(--transition-speed), border-color var(--transition-speed), box-shadow var(--transition-speed);
+    box-sizing: border-box; /* Важно для padding */
+}
+.custom-file-input:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+.custom-file-input .fas {
+    font-size: 1.2rem;
+}
+
+
+.action-button {
+    width: 100%;
+    padding: 15px 25px;
+    border: none;
+    border-radius: var(--border-radius-elements);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.3s ease, opacity 0.3s ease, background var(--transition-speed);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .action-button:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
+    background: gray !important; /* Убрать градиент при disabled */
+}
+
+.action-button .fas {
+    font-size: 1.3rem;
 }
 
 .or-separator {
-    margin: 2rem 0;
-    font-size: 1.1rem;
+    margin: 2.5rem 0;
+    font-size: 1.2rem;
     font-weight: 500;
-    opacity: 0.7;
+    opacity: 0.6;
+    letter-spacing: 0.5px;
 }
 
 .record-controls {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap; /* Для адаптивности */
+    flex-wrap: wrap;
 }
 
 .record-button {
-    flex: 1; /* Чтобы кнопки занимали доступное пространство */
-    min-width: 150px; /* Минимальная ширина для каждой кнопки */
+    flex: 1;
+    min-width: 180px;
 }
 
 .recording-indicator {
     display: flex; /* Скрыто по умолчанию, показывается при записи */
     align-items: center;
-    gap: 10px;
-    margin-top: 15px;
-    color: var(--dark-primary); /* Цвет текста записи */
-    font-weight: 600;
-    font-size: 1.1rem;
     justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--dark-accent); /* Акцентный цвет для текста записи */
 }
 
 /* Анимация пульсации для индикатора записи */
 .pulse-circle {
-    width: 15px;
-    height: 15px;
-    background-color: var(--dark-primary); /* Используем акцентный цвет */
+    width: 18px;
+    height: 18px;
+    background-color: var(--dark-accent); /* Акцентный цвет */
     border-radius: 50%;
     animation: pulse 1.5s infinite ease-out;
 }
+body.light-theme .pulse-circle {
+    background-color: var(--light-accent);
+}
 
 @keyframes pulse {
-    0% {
-        transform: scale(0.8);
-        opacity: 0.7;
-    }
-    50% {
-        transform: scale(1.2);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(0.8);
-        opacity: 0.7;
-    }
+    0% { transform: scale(0.7); opacity: 0.7; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(0.7); opacity: 0.7; }
 }
 
-.status-box, .result-box {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    border-radius: 15px; /* Закругленные края */
+.message-box {
+    margin-top: 2.5rem;
+    padding: 1.8rem;
+    border-radius: var(--border-radius-elements);
     text-align: left;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.03); /* Внутренняя тень */
-    font-size: 1rem;
+    font-size: 1.05rem;
     line-height: 1.6;
-    min-height: 50px; /* Чтобы всегда было место */
+    min-height: 70px;
+    display: flex;
+    flex-direction: column; /* Элементы внутри будут в колонку */
+    justify-content: center;
+    transition: background var(--transition-speed), border-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed);
+}
+.message-box strong {
+    font-weight: 700;
     display: flex;
     align-items: center;
-    transition: background 0.5s ease, border-color 0.5s ease, color 0.5s ease;
+    gap: 8px;
+    margin-bottom: 0.5rem;
+}
+.message-box .fas {
+    font-size: 1.1em;
 }
 
-.result-box h2 {
-    margin-top: 0;
-    font-size: 1.3rem;
-    color: inherit; /* Цвет текста наследуется от родителя */
+.result-box .section-title {
+    margin-bottom: 0.8rem;
+    justify-content: flex-start; /* Заголовок слева */
+    font-size: 1.4rem;
 }
-
-#result-text {
-    white-space: pre-wrap; /* Сохраняет переносы строк */
-    word-wrap: break-word; /* Переносит длинные слова */
-    flex-grow: 1; /* Занимает все доступное пространство */
+.result-content {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    opacity: 0.9;
+    flex-grow: 1;
 }
 
 /* Переключатель темы */
-.theme-switcher {
+.theme-toggle-container {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 30px;
+    right: 30px;
+    z-index: 10; /* Чтобы быть поверх всего */
 }
 
-.theme-switcher button {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%; /* Круглая кнопка */
-    cursor: pointer;
-    font-size: 1.2rem;
+.theme-toggle-button {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    font-size: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
-}
-
-.theme-switcher button:hover {
-    transform: rotate(15deg); /* Небольшой эффект при наведении */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Скрываем стандартный инпут для файла и стилизуем его через кнопку */
-input[type="file"] {
-    display: none;
-}
-
-.file-input::before {
-    content: 'Выбрать аудиофайл';
-    display: block;
-    background-color: var(--light-primary); /* Цвет кнопки */
-    color: white;
-    padding: 12px 25px;
-    border-radius: 10px;
     cursor: pointer;
-    font-size: 1.1rem;
-    font-weight: 600;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    transition: background var(--transition-speed), color var(--transition-speed), transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.dark-theme .file-input::before {
-    background: var(--dark-gradient-button);
-}
-
-.file-input:hover::before {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.file-input:active::before {
-    transform: translateY(0);
-    box-shadow: none;
+.theme-toggle-button:hover {
+    transform: rotate(20deg) scale(1.05);
 }
 
 
@@ -361,35 +435,69 @@ input[type="file"] {
 @media (max-width: 768px) {
     .container {
         padding: 1.5rem;
+        border-radius: 15px;
     }
-    h1 {
+    .main-title {
+        font-size: 2rem;
+        gap: 10px;
+    }
+    .title-icon {
         font-size: 1.8rem;
     }
     .description {
         font-size: 1rem;
+        margin-bottom: 1.5rem;
     }
-    .input-section {
-        padding: 1rem;
+    .card-section {
+        padding: 1.2rem;
+        margin-bottom: 1.5rem;
+        border-radius: 12px;
     }
+    .section-title {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+    .custom-file-input,
     .action-button {
-        padding: 10px 15px;
+        padding: 12px 15px;
         font-size: 1rem;
+        gap: 8px;
     }
     .record-controls {
         flex-direction: column;
-        gap: 10px;
+        gap: 15px;
     }
     .record-button {
         width: 100%;
         min-width: unset;
     }
-    .theme-switcher {
-        top: 10px;
-        right: 10px;
-    }
-    .theme-switcher button {
-        width: 40px;
-        height: 40px;
+    .or-separator {
+        margin: 1.5rem 0;
         font-size: 1rem;
+    }
+    .message-box {
+        padding: 1.2rem;
+        margin-top: 1.5rem;
+        min-height: 60px;
+        border-radius: 12px;
+    }
+    .message-box strong {
+        font-size: 0.95rem;
+    }
+    .recording-indicator {
+        font-size: 1rem;
+    }
+    .pulse-circle {
+        width: 14px;
+        height: 14px;
+    }
+    .theme-toggle-container {
+        top: 15px;
+        right: 15px;
+    }
+    .theme-toggle-button {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
     }
 }
