@@ -3,40 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Whisper Online: Распознавание речи</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Whisper Speech AI</title> <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="dark-theme"> <div class="theme-toggle-container">
     <button id="theme-toggle" class="icon-button theme-toggle-button" aria-label="Переключить тему">
       <i class="fas fa-sun"></i> </button>
   </div>
 
-  <div class="container">
-    <h1 class="main-title"><i class="fas fa-headset title-icon"></i> Whisper Online</h1>
-    <p class="description">Мгновенное распознавание речи прямо в вашем браузере. Выберите файл или запишите аудио!</p>
+  <div class="container glassmorphism"> <h1 class="main-title">
+      <i class="fas fa-microphone-alt title-icon"></i> 
+      <span>Whisper</span> <span class="gradient-text">Speech AI</span>
+    </h1>
+    <p class="description">Мгновенное распознавание аудио с поддержкой файлов и записи с микрофона.</p>
 
     <div class="card-section upload-section">
-      <h2 class="section-title"><i class="fas fa-file-audio section-icon"></i> Загрузить аудиофайл</h2>
-      <label for="audio-file-input" class="custom-file-input">
-        <i class="fas fa-upload"></i> Выбрать файл (MP3, WAV, FLAC...)
+      <h2 class="section-title"><i class="fas fa-file-upload section-icon"></i> Загрузить аудиофайл</h2>
+      <label for="audio-file-input" class="custom-file-input-label">
+        <span id="file-input-text"><i class="fas fa-folder-open"></i> Выберите аудио (MP3, WAV, FLAC...)</span>
       </label>
       <input type="file" id="audio-file-input" accept="audio/*" class="hidden-file-input">
       <button id="transcribe-file-button" class="action-button primary-button" disabled>
-        <i class="fas fa-play-circle"></i> Распознать загруженный файл
+        <i class="fas fa-play"></i> Распознать загруженный файл
       </button>
     </div>
 
-    <div class="or-separator">ИЛИ</div>
+    <div class="or-separator"><span>ИЛИ</span></div>
 
     <div class="card-section record-section">
-      <h2 class="section-title"><i class="fas fa-microphone section-icon"></i> Записать речь с микрофона</h2>
+      <h2 class="section-title"><i class="fas fa-microphone-alt section-icon"></i> Записать речь с микрофона</h2>
       <div class="record-controls">
         <button id="record-start-button" class="action-button record-button start-record-btn" disabled>
-          <i class="fas fa-microphone-alt"></i> Начать запись
+          <i class="fas fa-circle"></i> Начать запись
         </button>
         <button id="record-stop-button" class="action-button record-button stop-record-btn" disabled>
-          <i class="fas fa-stop-circle"></i> Остановить запись
+          <i class="fas fa-stop"></i> Остановить запись
         </button>
       </div>
       <div id="recording-indicator" class="recording-indicator">
@@ -46,11 +48,11 @@
     </div>
     
     <div class="status-box message-box">
-        <p><strong><i class="fas fa-info-circle"></i> Статус:</strong> <span id="status">Ожидание загрузки модели...</span></p>
+        <p><strong><i class="fas fa-info-circle"></i> Статус:</strong> <span id="status">Загрузка модели AI...</span></p>
     </div>
     
     <div class="result-box message-box">
-        <h2 class="section-title"><i class="fas fa-comment-dots"></i> Результат распознавания:</h2>
+        <h2 class="section-title"><i class="fas fa-clipboard-list"></i> Результат распознавания:</h2>
         <p id="result-text" class="result-content"></p>
     </div>
   </div>
@@ -68,7 +70,7 @@
     const recordingIndicator = document.getElementById('recording-indicator');
     const statusElement = document.getElementById('status');
     const resultTextElement = document.getElementById('result-text');
-    const customFileInputLabel = document.querySelector('.custom-file-input'); // Для обновления текста лейбла файла
+    const customFileInputLabel = document.getElementById('file-input-text'); // Для обновления текста лейбла файла
 
     let recognizer;
     let mediaRecorder;
@@ -108,13 +110,13 @@
     // --- Функции распознавания ---
     async function initializeRecognizer() {
       try {
-        updateStatus('Загрузка модели... (может занять несколько минут при первом запуске)');
-        recognizer = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny'); // Используем tiny для быстрой загрузки
-        updateStatus('Модель загружена. Готово к работе!');
+        updateStatus('Загрузка модели AI... (первый запуск может занять до 2-3 минут)');
+        recognizer = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny'); 
+        updateStatus('Модель успешно загружена. Готово к работе!');
         transcribeFileButton.disabled = false;
         recordStartButton.disabled = false;
       } catch (error) {
-        updateStatus('Ошибка при загрузке модели. Пожалуйста, попробуйте обновить страницу.');
+        updateStatus('Ошибка при загрузке модели. Пожалуйста, проверьте интернет-соединение и обновите страницу.');
         console.error('Ошибка при инициализации распознавателя:', error);
         transcribeFileButton.disabled = true;
         recordStartButton.disabled = true;
@@ -124,7 +126,7 @@
 
     async function transcribeAudio(audioFileOrBlob) {
       if (!recognizer) {
-        updateStatus('Ошибка: распознаватель не инициализирован. Перезагрузите страницу.');
+        updateStatus('Ошибка: AI модель не инициализирована. Перезагрузите страницу.');
         return;
       }
 
@@ -135,8 +137,8 @@
         recordStartButton.disabled = true;
         recordStopButton.disabled = true;
         recordingIndicator.style.display = 'none';
-        resultTextElement.textContent = 'Распознавание...';
-        updateStatus(`Обработка аудио...`);
+        resultTextElement.textContent = 'Обработка аудио...'; // Промежуточный статус в результате
+        updateStatus(`Идет обработка аудио...`);
         
         const output = await recognizer(audioUrl, {
             chunk_length_s: 30,
@@ -148,9 +150,9 @@
         updateStatus('Обработка завершена.');
         resultTextElement.textContent = output.text;
       } catch (error) {
-        updateStatus('Произошла ошибка во время распознавания. Пожалуйста, попробуйте еще раз.');
+        updateStatus('Произошла ошибка во время распознавания аудио.');
         console.error('Ошибка при распознавании:', error);
-        resultTextElement.textContent = 'Ошибка распознавания.';
+        resultTextElement.textContent = 'Ошибка распознавания. Попробуйте другой файл или запись.';
       } finally {
         transcribeFileButton.disabled = fileInput.files.length === 0; // Включаем, если есть файл
         if (!mediaRecorder || mediaRecorder.state === 'inactive') {
@@ -179,13 +181,13 @@
         };
 
         mediaRecorder.start();
-        updateStatus('Запись началась...');
+        updateStatus('Запись началась. Говорите...');
         recordStartButton.disabled = true;
         recordStopButton.disabled = false;
         recordingIndicator.style.display = 'flex';
         resultTextElement.textContent = '';
       } catch (error) {
-        updateStatus('Ошибка: нет доступа к микрофону или произошла ошибка записи.');
+        updateStatus('Ошибка: Нет доступа к микрофону. Проверьте разрешения браузера.');
         console.error('Ошибка записи аудио:', error);
         recordStartButton.disabled = false; // Разблокируем кнопку, если ошибка
         recordStopButton.disabled = true;
@@ -207,10 +209,10 @@
 
     fileInput.addEventListener('change', () => {
       if (fileInput.files.length > 0) {
-        customFileInputLabel.textContent = fileInput.files[0].name; // Обновляем текст лейбла
+        customFileInputLabel.innerHTML = `<i class="fas fa-file-audio"></i> ${fileInput.files[0].name}`; // Обновляем текст лейбла с иконкой
         transcribeFileButton.disabled = false; // Активируем кнопку распознавания файла
       } else {
-        customFileInputLabel.innerHTML = '<i class="fas fa-upload"></i> Выбрать файл (MP3, WAV, FLAC...)';
+        customFileInputLabel.innerHTML = '<i class="fas fa-folder-open"></i> Выберите аудио (MP3, WAV, FLAC...)';
         transcribeFileButton.disabled = true;
       }
     });
@@ -227,11 +229,13 @@
     recordStopButton.addEventListener('click', stopRecording);
 
     // --- Инициализация при загрузке страницы ---
-    // Проверяем сохраненную тему (если пользователь сменил, иначе будет dark-theme по умолчанию)
+    // Проверяем сохраненную тему. Если сохранена 'light', переключаем на нее. Иначе оставляем 'dark' по умолчанию.
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') { // Если сохранена светлая, переключаем
-      body.classList.remove('dark-theme');
+    if (savedTheme === 'light') { 
+      body.classList.remove('dark-theme'); // Удаляем dark-theme, если light сохранена
       body.classList.add('light-theme');
+    } else {
+      body.classList.add('dark-theme'); // Убедимся, что dark-theme применена по умолчанию
     }
     updateThemeIcon(savedTheme || 'dark'); // Обновить иконку темы при загрузке, по умолчанию 'dark'
 
