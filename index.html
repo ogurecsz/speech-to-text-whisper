@@ -1,31 +1,96 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Распознавание речи с Whisper</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Распознавание речи с Whisper</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>🎙️ Распознавание речи на базе Whisper</h1>
-        <p>Выберите аудиофайл (WAV, MP3 и др.), и он будет обработан прямо в вашем браузере.</p>
+  <div class="container">
+    <h1>🎙️ Распознавание речи на базе Whisper</h1>
+    <p>Выберите аудиофайл (WAV, MP3 и др.), и он будет обработан прямо в вашем браузере.</p>
 
-        <input type="file" id="audio-file-input" accept="audio/*">
-        <button id="transcribe-button">Распознать</button>
+    <input type="file" id="audio-file-input" accept="audio/*">
+    <button id="transcribe-button">Распознать</button>
 
-        <div class="status-box">
-            <p><strong>Статус:</strong> <span id="status">Ожидание файла...</span></p>
-        </div>
-
-        <div class="result-box">
-            <h2>Результат:</h2>
-            <p id="result-text"></p>
-        </div>
+    <div class="status-box">
+      <p><strong>Статус:</strong> <span id="status">Ожидание файла...</span></p>
     </div>
 
-    <!-- ВАЖНО: правильный скрипт Xenova -->
-    <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers/dist/transformers.min.js"></script>
-    <script src="script.js"></script>
+    <div class="result-box">
+      <h2>Результат:</h2>
+      <p id="result-text"></p>
+    </div>
+  </div>
+
+  <!-- Вместо внешнего script.js весь код подключён как модуль -->
+  <script type="module">
+    import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1';
+
+    const fileInput = document.getElementById('audio-file-input');
+    const transcribeButton = document.getElementById('transcribe-button');
+    const statusElement = document.getElementById('status');
+    const resultTextElement = document.getElementById('result-text');
+
+    let recognizer;
+
+    function updateStatus(text) {
+      statusElement.textContent = text;
+      console.log(text);
+    }
+
+    async function initializeRecognizer() {
+      try {
+        updateStatus('Загрузка модели... (может занять несколько минут при первом запуске)');
+        recognizer = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny');
+        updateStatus('Модель загружена. Выберите аудиофайл.');
+        transcribeButton.disabled = false;
+      } catch (error) {
+        updateStatus('Ошибка при загрузке модели.');
+        console.error('Ошибка при инициализации распознавателя:', error);
+      }
+    }
+
+    async function transcribeAudio() {
+      if (!fileInput.files.length) {
+        updateStatus('Ошибка: файл не выбран.');
+        return;
+      }
+      if (!recognizer) {
+        updateStatus('Ошибка: распознаватель не инициализирован.');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const audioUrl = URL.createObjectURL(file);
+
+      try {
+        transcribeButton.disabled = true;
+        resultTextElement.textContent = '';
+        updateStatus(`Обработка файла: ${file.name}...`);
+
+        const output = await recognizer(audioUrl, {
+          chunk_length_s: 30,
+          stride_length_s: 5,
+          language: 'russian',
+          task: 'transcribe'
+        });
+
+        updateStatus('Обработка завершена.');
+        resultTextElement.textContent = output.text;
+      } catch (error) {
+        updateStatus('Произошла ошибка во время распознавания.');
+        console.error(error);
+      } finally {
+        transcribeButton.disabled = false;
+        URL.revokeObjectURL(audioUrl);
+      }
+    }
+
+    transcribeButton.addEventListener('click', transcribeAudio);
+    transcribeButton.disabled = true;
+    initializeRecognizer();
+  </script>
 </body>
 </html>
